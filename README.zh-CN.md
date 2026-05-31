@@ -32,6 +32,8 @@
 .
 ├── pet.json
 ├── spritesheet.webp
+├── install.sh
+├── install.ps1
 ├── README.md
 ├── README.zh-CN.md
 └── qa/
@@ -50,43 +52,39 @@
 
 ## 安装
 
-### 一行命令安装
+### macOS / Linux
 
 ```bash
-PET_DIR="${CODEX_HOME:-$HOME/.codex}/pets/licky-cat"
-mkdir -p "$PET_DIR"
-curl -L -o "$PET_DIR/pet.json" "https://raw.githubusercontent.com/0xNekoo/licky-cat-codex-pet/main/pet.json"
-curl -L -o "$PET_DIR/spritesheet.webp" "https://raw.githubusercontent.com/0xNekoo/licky-cat-codex-pet/main/spritesheet.webp"
+curl -fsSL https://raw.githubusercontent.com/0xNekoo/licky-cat-codex-pet/main/install.sh | bash
+```
+
+### Windows PowerShell
+
+```powershell
+iwr -UseB https://raw.githubusercontent.com/0xNekoo/licky-cat-codex-pet/main/install.ps1 | iex
 ```
 
 安装后重启 Codex，然后在自定义宠物列表里选择 `舔舔猫`。
 
-### 手动安装
-
-1. 下载 `pet.json`。
-2. 下载 `spritesheet.webp`。
-3. 如果本地没有宠物目录，先创建：
-
-```bash
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/pets/licky-cat"
-```
-
-4. 把两个文件放到下面的位置：
-
-```text
-~/.codex/pets/licky-cat/pet.json
-~/.codex/pets/licky-cat/spritesheet.webp
-```
-
-5. 重启 Codex，并选择 `舔舔猫`。
-
 ## 验证
+
+macOS / Linux：
 
 ```bash
 PET_DIR="${CODEX_HOME:-$HOME/.codex}/pets/licky-cat"
 test -f "$PET_DIR/pet.json"
 test -f "$PET_DIR/spritesheet.webp"
 python3 -m json.tool "$PET_DIR/pet.json" >/dev/null
+```
+
+Windows PowerShell：
+
+```powershell
+$CodexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
+$PetDir = Join-Path (Join-Path $CodexHome "pets") "licky-cat"
+Test-Path (Join-Path $PetDir "pet.json")
+Test-Path (Join-Path $PetDir "spritesheet.webp")
+Get-Content (Join-Path $PetDir "pet.json") | ConvertFrom-Json | Out-Null
 ```
 
 `pet.json` 应包含：
@@ -101,8 +99,17 @@ python3 -m json.tool "$PET_DIR/pet.json" >/dev/null
 
 ## 卸载
 
+macOS / Linux：
+
 ```bash
 rm -rf "${CODEX_HOME:-$HOME/.codex}/pets/licky-cat"
+```
+
+Windows PowerShell：
+
+```powershell
+$CodexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }
+Remove-Item -Recurse -Force (Join-Path (Join-Path $CodexHome "pets") "licky-cat")
 ```
 
 卸载后重启 Codex。
